@@ -503,15 +503,15 @@ let generate ~gen_io name stmts =
     String.concat " and " (List.map (fun s -> sprintf "%s = T.%s" s s) ["num";"text";"any"])
   in
 *)
-  let (traits, io) =
+  let traits =
     match gen_io with
-    | true -> "Sqlgg_traits.M_io", "T.IO"
-    | false -> "Sqlgg_traits.M", "Sqlgg_io.Blocking"
+    | true -> "Sqlgg_traits.M_io"
+    | false -> "Sqlgg_traits.M with module IO = Sqlgg_io.Blocking"
   in
   output "module %s (T : %s) = struct" (String.capitalize_ascii name) traits;
   empty_line ();
   inc_indent ();
-  output "module IO = %s" io;
+  output "module IO = T.IO";
   empty_line ();
   List.iteri (generate_stmt `Direct) stmts;
   output "module Fold = struct";
